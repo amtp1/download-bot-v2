@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import select, update
 from sqlalchemy.orm import sessionmaker
 
-from bot.db import Role, UserModel
+from bot.db import Role, UserModel, Download
 
 
 class SQLUser:
@@ -100,6 +100,51 @@ class SQLUser:
                             select(UserModel.created).where(
                                 UserModel.created >= week
                             )
+                        )
+                    ).scalars()
+                )
+
+    async def blocked_users(self):
+        async with self.session() as session:
+            async with session.begin():
+                return list(
+                    (
+                        await session.execute(
+                            select(UserModel).where(
+                                UserModel.is_blocked == True
+                            )
+                        )
+                    ).scalars()
+                )
+
+    async def all(self):
+        async with self.session() as session:
+            async with session.begin():
+                return list(
+                    (
+                        await session.execute(
+                            select(UserModel)
+                        )
+                    ).scalars()
+                )
+
+
+class SQLDownload:
+    def __init__(self, session: sessionmaker):
+        """
+        Метод инициализации
+        :param session: Пул соединений с БД
+        :return: bool
+        """
+        self.session = session
+
+    async def all(self):
+        async with self.session() as session:
+            async with session.begin():
+                return list(
+                    (
+                        await session.execute(
+                            select(Download)
                         )
                     ).scalars()
                 )
