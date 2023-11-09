@@ -138,6 +138,17 @@ class SQLDownload:
         """
         self.session = session
 
+    async def add(self, user_id: int, link: str, content_type: str, service: str) -> None:
+        """
+        Добавить нового пользователя
+        :param user_id: Телеграм id пользователя
+        :return: None
+        """
+        async with self.session() as session:
+            async with session.begin():
+                downlod = Download(user_id=user_id, link=link, content_type=content_type, service=service)
+                session.add(downlod)
+
     async def all(self):
         async with self.session() as session:
             async with session.begin():
