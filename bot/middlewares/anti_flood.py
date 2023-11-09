@@ -31,7 +31,7 @@ class AntiFloodMiddleware(BaseMiddleware):
                 )  # Добавляем в ожидание
             else:  # Если находится в ожидании
                 return await event.answer(
-                    f"<b>Сработала защита от спама, ожидайте {delay}сек.</b>"
+                    f"<b>Spam protection has worked, stand by {delay}sec.</b>"
                 )
 
         return await handler(event, data)
