@@ -1,0 +1,9 @@
+*.pyc
+.flake8
+
+.vscode/
+
+alembic.ini
+bot.ini
+
+migrations/
