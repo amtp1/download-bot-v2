@@ -26,8 +26,6 @@ async def start(
     Обработчик, который реагирует на команду /start
     """
 
-    sql_user = SQLUser(session)
-    user = await sql_user.get(user_id=m.from_user.id)
     return await m.answer("Paste link or select option👇", reply_markup=KB_START)
 
 
