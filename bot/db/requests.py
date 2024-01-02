@@ -38,7 +38,7 @@ class SQLUser:
         """
         async with self.session() as session:
             async with session.begin():
-                user = UserModel(id=user_id, first_name=first_name, last_name=last_name)
+                user = UserModel(user_id=user_id, first_name=first_name, last_name=last_name)
                 session.add(user)
 
     async def get(self, user_id: int) -> UserModel:
