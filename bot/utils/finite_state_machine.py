@@ -6,4 +6,4 @@ class ControlStates(StatesGroup):
     Состояния центра управления
     """
 
-    pass
+    waiting_mail = State()
