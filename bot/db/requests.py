@@ -83,7 +83,7 @@ class SQLUser:
         async with self.session() as session:
             async with session.begin():
                 await session.execute(
-                    update(UserModel).where(UserModel.id == user_id).values(kwargs)
+                    update(UserModel).where(UserModel.user_id == user_id).values(kwargs)
                 )
 
     async def get_users_in_week(self) -> list[datetime]:
