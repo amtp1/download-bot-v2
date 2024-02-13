@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 from enum import IntEnum
 
-from sqlalchemy import (BigInteger, Column, DateTime, String, Boolean, Enum)
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, Enum, String
 
 from .base import Base
 
@@ -19,9 +19,7 @@ class UserModel(Base):
 
     __tablename__ = "users"
 
-    id = Column(
-        BigInteger, nullable=False, primary_key=True
-    )  # Unique id
+    id = Column(BigInteger, nullable=False, primary_key=True)  # Unique id
     role = Column(Enum(Role), default=Role.USER)  # Роль пользователя в проекте
     user_id = Column(BigInteger())
     username = Column(String, nullable=True)
@@ -47,16 +45,12 @@ class Download(Base):
 
     __tablename__ = "downloads"
 
-    id = Column(
-        BigInteger, nullable=False, primary_key=True
-    )  # Unique id
+    id = Column(BigInteger, nullable=False, primary_key=True)  # Unique id
     user_id = Column(BigInteger())
     link = Column(String)
     content_type = Column(String)
     service = Column(String)
-    created = Column(
-        DateTime(), default=dt.today(), onupdate=dt.today()
-    )
+    created = Column(DateTime(), default=dt.today(), onupdate=dt.today())
 
     def __str__(self):
         return f"Download Id: {self.id}"

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import select, update
 from sqlalchemy.orm import sessionmaker
 
-from bot.db import Role, UserModel, Download
+from bot.db import Download, Role, UserModel
 
 
 class SQLUser:
@@ -38,7 +38,9 @@ class SQLUser:
         """
         async with self.session() as session:
             async with session.begin():
-                user = UserModel(user_id=user_id, first_name=first_name, last_name=last_name)
+                user = UserModel(
+                    user_id=user_id, first_name=first_name, last_name=last_name
+                )
                 session.add(user)
 
     async def get(self, user_id: int) -> UserModel:
@@ -97,9 +99,7 @@ class SQLUser:
                 return list(
                     (
                         await session.execute(
-                            select(UserModel.created).where(
-                                UserModel.created >= week
-                            )
+                            select(UserModel.created).where(UserModel.created >= week)
                         )
                     ).scalars()
                 )
@@ -110,9 +110,7 @@ class SQLUser:
                 return list(
                     (
                         await session.execute(
-                            select(UserModel).where(
-                                UserModel.is_blocked == True
-                            )
+                            select(UserModel).where(UserModel.is_blocked == True)
                         )
                     ).scalars()
                 )
@@ -120,13 +118,7 @@ class SQLUser:
     async def all(self):
         async with self.session() as session:
             async with session.begin():
-                return list(
-                    (
-                        await session.execute(
-                            select(UserModel)
-                        )
-                    ).scalars()
-                )
+                return list((await session.execute(select(UserModel))).scalars())
 
 
 class SQLDownload:
@@ -138,7 +130,9 @@ class SQLDownload:
         """
         self.session = session
 
-    async def add(self, user_id: int, link: str, content_type: str, service: str) -> None:
+    async def add(
+        self, user_id: int, link: str, content_type: str, service: str
+    ) -> None:
         """
         Добавить нового пользователя
         :param user_id: Телеграм id пользователя
@@ -146,16 +140,15 @@ class SQLDownload:
         """
         async with self.session() as session:
             async with session.begin():
-                downlod = Download(user_id=user_id, link=link, content_type=content_type, service=service)
+                downlod = Download(
+                    user_id=user_id,
+                    link=link,
+                    content_type=content_type,
+                    service=service,
+                )
                 session.add(downlod)
 
     async def all(self):
         async with self.session() as session:
             async with session.begin():
-                return list(
-                    (
-                        await session.execute(
-                            select(Download)
-                        )
-                    ).scalars()
-                )
+                return list((await session.execute(select(Download))).scalars())

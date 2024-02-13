@@ -3,8 +3,7 @@ from dataclasses import dataclass
 
 from redis.asyncio.client import Redis
 from sqlalchemy.engine import URL
-from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
-                                    create_async_engine)
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 
@@ -75,5 +74,5 @@ def load_config(path: str):
         bot=BotConfig(**file_config["bot"]),
         db=DBConfig(**file_config["db"]),
         redis=RedisConfig(**file_config["redis"]),
-        rapid=Rapid(**file_config["rapid"])
+        rapid=Rapid(**file_config["rapid"]),
     )

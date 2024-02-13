@@ -1,14 +1,13 @@
-from aiogram import F
-from aiogram import Bot, Router
-from aiogram.types import BufferedInputFile
+from aiogram import Bot, F, Router
+from aiogram.exceptions import TelegramEntityTooLarge
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import BufferedInputFile, CallbackQuery, Message
 from sqlalchemy.orm import sessionmaker
 
 from bot.db import Role, SQLDownload
 from bot.filters import ChatTypeFilter, RoleCheckFilter, check_url
 from bot.keyboards import IKB_SELECT_TYPE, convert_to_content_types
-from bot.utils.callback_data_factories import BasicCallback, BasicAction
+from bot.utils.callback_data_factories import BasicAction, BasicCallback
 from bot.youtube import YouTube
 
 # from bot.keyboards.basic import IKB_PROFILE, IKB_START
@@ -39,33 +38,36 @@ async def download(
 
 
 @router.callback_query(BasicCallback.filter(F.action == BasicAction.SELECT_AUDIO))
-async def select_audio(
-    c: CallbackQuery, state: FSMContext
-) -> CallbackQuery | None:
+async def select_audio(c: CallbackQuery, state: FSMContext) -> CallbackQuery | None:
     state_data = await state.get_data()
     url = state_data["url"]
     youtube = YouTube(url)
     streams = youtube.get_streams(is_audio=True)
-    streams, markup = convert_to_content_types(title=streams["title"], streams=streams["audios"], is_audio=True)
+    streams, markup = convert_to_content_types(
+        title=streams["title"], streams=streams["audios"], is_audio=True
+    )
     await state.update_data(streams=streams)
     return await c.message.edit_text("Select👇", reply_markup=markup.as_markup())
 
 
 @router.callback_query(BasicCallback.filter(F.action == BasicAction.SELECT_VIDEO))
-async def select_video(
-    c: CallbackQuery, state: FSMContext
-) -> CallbackQuery | None:
+async def select_video(c: CallbackQuery, state: FSMContext) -> CallbackQuery | None:
     state_data = await state.get_data()
     url = state_data["url"]
     youtube = YouTube(url)
     streams = youtube.get_streams(is_video=True)
-    streams, markup = convert_to_content_types(title=streams["title"], streams=streams["videos"], is_video=True)
+    streams, markup = convert_to_content_types(
+        title=streams["title"], streams=streams["videos"], is_video=True
+    )
     await state.update_data(streams=streams)
     return await c.message.edit_text("Select👇", reply_markup=markup.as_markup())
 
 
 @router.callback_query(lambda query: query.data.startswith(("audio")))
-async def download_audio(c: CallbackQuery, state: FSMContext, session: sessionmaker):
+async def download_audio(
+    c: CallbackQuery, state: FSMContext, session: sessionmaker
+) -> Message | bool:
+    await c.message.edit_text("Downloading... Please, wait!")
     audio_id = c.data.replace("audio#", "")
     state_data = await state.get_data()
     streams = state_data["streams"]
@@ -73,15 +75,25 @@ async def download_audio(c: CallbackQuery, state: FSMContext, session: sessionma
     audio_title = streams["title"]
     youtube = YouTube()
     audio = youtube.download(audio_url)
-    await c.message.edit_text("Downloading... Please, wait!")
     sql_download = SQLDownload(session)
-    await sql_download.add(user_id=c.from_user.id, link=audio_url, content_type="audio", service="youtube")
-    return await c.message.answer_audio(audio=BufferedInputFile(audio, filename=audio_title), title=audio_title,
-                                        caption="🔗Channel: @downloader_video")
+    await sql_download.add(
+        user_id=c.from_user.id, link=audio_url, content_type="audio", service="youtube"
+    )
+    try:
+        return await c.message.answer_audio(
+            audio=BufferedInputFile(audio, filename=audio_title),
+            title=audio_title,
+            caption="🔗Channel: @downloader_video",
+        )
+    except TelegramEntityTooLarge as e:
+        return await c.message.edit_text(e.message)
 
 
 @router.callback_query(lambda query: query.data.startswith(("video")))
-async def download_video(c: CallbackQuery, state: FSMContext, session: sessionmaker):
+async def download_video(
+    c: CallbackQuery, state: FSMContext, session: sessionmaker
+) -> Message | bool:
+    await c.message.edit_text("Downloading... Please, wait!")
     video_id = c.data.replace("video#", "")
     state_data = await state.get_data()
     streams = state_data["streams"]
@@ -89,11 +101,19 @@ async def download_video(c: CallbackQuery, state: FSMContext, session: sessionma
     video_title = streams["title"]
     youtube = YouTube()
     video = youtube.download(video_url)
-    await c.message.edit_text("Downloading... Please, wait!")
     sql_download = SQLDownload(session)
-    await sql_download.add(user_id=c.from_user.id, link=video_url, content_type="video", service="youtube")
-    return await c.message.answer_video(video=BufferedInputFile(video, filename=video_title), title=video_title,
-                                        caption=video_title)
+    await sql_download.add(
+        user_id=c.from_user.id, link=video_url, content_type="video", service="youtube"
+    )
+    try:
+        return await c.message.answer_video(
+            video=BufferedInputFile(video, filename=video_title),
+            title=video_title,
+            caption=video_title,
+        )
+    except TelegramEntityTooLarge as e:
+        return await c.message.edit_text(e.message)
+
 
 # Псевдоним
 router_download = router

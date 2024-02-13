@@ -1,6 +1,6 @@
 from .base import Base, metadata
-from .models import UserModel, Download, Role
-from .requests import SQLUser, SQLDownload
+from .models import Download, Role, UserModel
+from .requests import SQLDownload, SQLUser
 
 __all__ = (
     "Base",

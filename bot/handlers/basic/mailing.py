@@ -1,16 +1,16 @@
 from datetime import datetime as dt
 
 from aiogram import Bot, Router
+from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
+from aiogram.filters import Command, CommandObject
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import CommandObject, Command
 from aiogram.types import Message
 from sqlalchemy.orm import sessionmaker
-from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 
+from bot.config import load_config
 from bot.db import Role, SQLUser
 from bot.filters import ChatTypeFilter, RoleCheckFilter
 from bot.utils import ControlStates
-from bot.config import load_config
 
 config = load_config("bot.ini")
 bot = Bot(config.bot.token, parse_mode="HTML")
@@ -28,7 +28,11 @@ router.message.filter(ChatTypeFilter(["private"]))
 # Регистрация обработчиков
 @router.message(Command("mail"), flags={"delay": 2})
 async def mailing(
-    m: Message, command: CommandObject, bot: Bot, session: sessionmaker, state: FSMContext
+    m: Message,
+    command: CommandObject,
+    bot: Bot,
+    session: sessionmaker,
+    state: FSMContext,
 ) -> None:
     """
     Обработчик, который реагирует на команду /mail
@@ -56,6 +60,7 @@ async def mailing_wait(m: Message, session: sessionmaker, state: FSMContext):
     total_sec = (end_time - start_time).total_seconds()
     await state.clear()
     return await m.answer("Время рассылки: {:.2f} seconds.".format(total_sec))
+
 
 # Псевдоним
 router_mailing = router

@@ -20,7 +20,7 @@ class YouTube:
 
         headers = {
             "X-RapidAPI-Key": config.rapid.token,
-            "X-RapidAPI-Host": "youtube-media-downloader.p.rapidapi.com"
+            "X-RapidAPI-Host": "youtube-media-downloader.p.rapidapi.com",
         }
 
         response = requests.get(url, headers=headers, params=querystring)

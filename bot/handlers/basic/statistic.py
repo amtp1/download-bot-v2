@@ -1,9 +1,9 @@
 from aiogram import Bot, Router
-from aiogram.filters import CommandObject, Command
+from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
 from sqlalchemy.orm import sessionmaker
 
-from bot.db import Role, SQLUser, SQLDownload
+from bot.db import Role, SQLDownload, SQLUser
 from bot.filters import ChatTypeFilter, RoleCheckFilter
 
 # from bot.keyboards.basic import IKB_PROFILE, IKB_START
