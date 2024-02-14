@@ -3,7 +3,7 @@ from aiogram.filters import CommandObject, CommandStart
 from aiogram.types import Message
 from sqlalchemy.orm import sessionmaker
 
-from bot.db import Role, SQLUser
+from bot.db import Role
 from bot.filters import ChatTypeFilter, RoleCheckFilter
 from bot.keyboards import KB_START
 
