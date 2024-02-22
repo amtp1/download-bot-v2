@@ -1,5 +1,5 @@
 from aiogram import Bot, F, Router
-from aiogram.exceptions import TelegramEntityTooLarge
+from aiogram.exceptions import TelegramEntityTooLarge, TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import BufferedInputFile, CallbackQuery, Message
 from sqlalchemy.orm import sessionmaker
@@ -76,16 +76,17 @@ async def download_audio(
     youtube = YouTube()
     audio = youtube.download(audio_url)
     sql_download = SQLDownload(session)
-    await sql_download.add(
-        user_id=c.from_user.id, link=audio_url, content_type="audio", service="youtube"
-    )
+
     try:
-        return await c.message.answer_audio(
+        await c.message.answer_audio(
             audio=BufferedInputFile(audio, filename=audio_title),
             title=audio_title,
             caption="🔗Channel: @downloader_video",
         )
-    except TelegramEntityTooLarge as e:
+        return await sql_download.add(
+            user_id=c.from_user.id, link=audio_url, content_type="audio", service="youtube"
+        )
+    except (TelegramEntityTooLarge, TelegramBadRequest) as e:
         return await c.message.edit_text(e.message)
 
 
@@ -102,16 +103,17 @@ async def download_video(
     youtube = YouTube()
     video = youtube.download(video_url)
     sql_download = SQLDownload(session)
-    await sql_download.add(
-        user_id=c.from_user.id, link=video_url, content_type="video", service="youtube"
-    )
+
     try:
-        return await c.message.answer_video(
+        await c.message.answer_video(
             video=BufferedInputFile(video, filename=video_title),
             title=video_title,
             caption=video_title,
         )
-    except TelegramEntityTooLarge as e:
+        return await sql_download.add(
+            user_id=c.from_user.id, link=video_url, content_type="video", service="youtube"
+        )
+    except (TelegramEntityTooLarge, TelegramBadRequest) as e:
         return await c.message.edit_text(e.message)
 
 
