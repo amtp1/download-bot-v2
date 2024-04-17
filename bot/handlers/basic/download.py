@@ -50,7 +50,7 @@ async def select_audio(c: CallbackQuery, state: FSMContext) -> CallbackQuery | N
     try:
         return await c.message.edit_text("Select👇", reply_markup=markup.as_markup())
     except TelegramBadRequest:
-            return await m.answer("Error. Try again!")
+        return await c.message.edit_text("Error. Try again!")
 
 
 @router.callback_query(BasicCallback.filter(F.action == BasicAction.SELECT_VIDEO))
@@ -66,7 +66,7 @@ async def select_video(c: CallbackQuery, state: FSMContext) -> CallbackQuery | N
     try:
         return await c.message.edit_text("Select👇", reply_markup=markup.as_markup())
     except TelegramBadRequest:
-            return await m.answer("Error. Try again!")
+        return await c.message.edit_text("Error. Try again!")
 
 
 @router.callback_query(lambda query: query.data.startswith(("audio")))
