@@ -1,5 +1,5 @@
 from aiogram import Bot, F, Router
-from aiogram.exceptions import TelegramEntityTooLarge, TelegramBadRequest
+from aiogram.exceptions import TelegramEntityTooLarge, TelegramBadRequest, TelegramForbiddenError
 from aiogram.fsm.context import FSMContext
 from aiogram.types import BufferedInputFile, CallbackQuery, Message
 from sqlalchemy.orm import sessionmaker
@@ -31,7 +31,10 @@ async def download(
 
     url = check_url(m.text)
     if not url:
-        return await m.answer("❌Incorrect link")
+        try:
+            return await m.answer("❌Incorrect link")
+        except TelegramForbiddenError:
+            pass
     else:
         await state.update_data(url=m.text)
         return await m.answer("Select the type👇", reply_markup=IKB_SELECT_TYPE)
