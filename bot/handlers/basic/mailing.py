@@ -1,4 +1,5 @@
 from datetime import datetime as dt
+from pydantic import ValidationError
 
 from aiogram import Bot, Router
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
@@ -55,6 +56,8 @@ async def mailing_wait(m: Message, session: sessionmaker, state: FSMContext):
             await bot.send_message(chat_id=user.user_id, text=m.text)
         except (TelegramBadRequest, TelegramForbiddenError):
             await sql_user.update(user_id=user.user_id, is_blocked=True)
+        except ValidationError:
+            pass
 
     end_time = dt.now()
     total_sec = (end_time - start_time).total_seconds()
