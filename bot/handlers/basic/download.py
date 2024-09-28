@@ -29,6 +29,7 @@ async def download(
     """
     Обработчик, который реагирует на команду /start
     """
+    sql_download = SQLDownload(session)
 
     service_data = check_url(m.text)
     if not service_data:
@@ -49,6 +50,9 @@ async def download(
                     video=BufferedInputFile(download_data['data'], filename='tiktok_video.mp4'),
                     title=download_data['author'],
                     caption=download_data['author'],
+                )
+                return await sql_download.add(
+                    user_id=m.from_user.id, link=m.text, content_type="video", service="tiktok"
                 )
             except Exception as e:
                 return await m.answer(f"Error: {e.args[0]}")
