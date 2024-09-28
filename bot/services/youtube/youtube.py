@@ -19,7 +19,7 @@ class YouTube:
         querystring = {"videoId": self.video_id}
 
         headers = {
-            "X-RapidAPI-Key": config.rapid.token,
+            "X-RapidAPI-Key": config.rapid.youtube_token,
             "X-RapidAPI-Host": "youtube-media-downloader.p.rapidapi.com",
         }
 

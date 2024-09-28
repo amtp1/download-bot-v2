@@ -52,7 +52,8 @@ class RedisConfig:
 
 @dataclass
 class Rapid:
-    token: str
+    youtube_token: str
+    tiktok_token: str
 
 
 @dataclass

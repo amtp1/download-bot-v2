@@ -8,7 +8,8 @@ from bot.db import Role, SQLDownload
 from bot.filters import ChatTypeFilter, RoleCheckFilter, check_url
 from bot.keyboards import IKB_SELECT_TYPE, convert_to_content_types
 from bot.utils.callback_data_factories import BasicAction, BasicCallback
-from bot.youtube import YouTube
+from bot.services.youtube import YouTube
+from bot.services.tiktok import TikTok
 
 # from bot.keyboards.basic import IKB_PROFILE, IKB_START
 
@@ -29,15 +30,28 @@ async def download(
     Обработчик, который реагирует на команду /start
     """
 
-    url = check_url(m.text)
-    if not url:
+    service_data = check_url(m.text)
+    if not service_data:
         try:
             return await m.answer("❌Incorrect link")
         except TelegramForbiddenError:
             pass
     else:
         await state.update_data(url=m.text)
-        return await m.answer("Select the type👇", reply_markup=IKB_SELECT_TYPE)
+        if service_data['service'] == 'youtube':
+            return await m.answer("Select the type👇", reply_markup=IKB_SELECT_TYPE)
+        elif service_data['service'] == 'tiktok':
+            await m.answer("Downloading... Please, wait!")
+            try:
+                tiktok = TikTok(m.text)
+                download_data = tiktok.download()
+                await m.answer_video(
+                    video=BufferedInputFile(download_data['data'], filename='tiktok_video.mp4'),
+                    title=download_data['author'],
+                    caption=download_data['author'],
+                )
+            except Exception as e:
+                return await m.answer(f"Error: {e.args[0]}")
 
 
 @router.callback_query(BasicCallback.filter(F.action == BasicAction.SELECT_AUDIO))
