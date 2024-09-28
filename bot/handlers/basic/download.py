@@ -22,7 +22,7 @@ router.message.filter(ChatTypeFilter(["private"]))
 
 
 # Регистрация обработчиков
-@router.message(F.text, flags={"delay": 2})
+@router.message(F.text.startswith('https'), flags={"delay": 2})
 async def download(
     m: Message, bot: Bot, session: sessionmaker, state: FSMContext
 ) -> None:
