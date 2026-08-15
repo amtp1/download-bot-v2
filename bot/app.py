@@ -3,6 +3,8 @@ from contextlib import suppress
 from logging import INFO, basicConfig
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 from aiogram.fsm.storage.redis import RedisStorage
 
 from bot.config import load_config
@@ -27,7 +29,10 @@ async def main() -> None:
     storage = RedisStorage(redis=redis)
 
     # Бот, Диспетчер
-    bot = Bot(config.bot.token, parse_mode="HTML")
+    bot = Bot(
+        config.bot.token,
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+    )
     dp = Dispatcher(storage=storage)
 
     # Зарегистрировать ПО промежуточного слоя

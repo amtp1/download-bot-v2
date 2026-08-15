@@ -1,12 +1,10 @@
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from sqlalchemy.orm import sessionmaker
 
 from bot.db import Role
 from bot.filters import ChatTypeFilter, RoleCheckFilter
-
-# from bot.keyboards.basic import IKB_PROFILE, IKB_START
+from bot.utils.texts import help_message
 
 # Создание маршрутизатора
 router = Router(name="Help Text")
@@ -16,10 +14,10 @@ router.message.filter(RoleCheckFilter(Role.USER))
 router.message.filter(ChatTypeFilter(["private"]))
 
 
-# Регистрация обработчиков
-@router.message(F.text == 'Help', flags={"delay": 2})
-async def help(m: Message):
-    return await m.answer('Downloader Bot')
+@router.message(F.text == "Help", flags={"delay": 2})
+@router.message(Command("help"), flags={"delay": 2})
+async def help_handler(m: Message) -> None:
+    return await m.answer(help_message())
 
 
 # Псевдоним

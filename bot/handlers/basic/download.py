@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from aiogram import Bot, F, Router
 from aiogram.exceptions import TelegramEntityTooLarge, TelegramBadRequest, TelegramForbiddenError
@@ -95,7 +95,7 @@ async def select_video(c: CallbackQuery, state: FSMContext) -> Optional[Callback
 @router.callback_query(lambda query: query.data.startswith(("audio")))
 async def download_audio(
     c: CallbackQuery, state: FSMContext, session: sessionmaker
-) -> Message | bool:
+) -> Union[Message, bool]:
     await c.message.edit_text("Downloading... Please, wait!")
     audio_id = c.data.replace("audio#", "")
     state_data = await state.get_data()
@@ -122,7 +122,7 @@ async def download_audio(
 @router.callback_query(lambda query: query.data.startswith(("video")))
 async def download_video(
     c: CallbackQuery, state: FSMContext, session: sessionmaker
-) -> Message | bool:
+) -> Union[Message, bool]:
     await c.message.edit_text("Downloading... Please, wait!")
     video_id = c.data.replace("video#", "")
     state_data = await state.get_data()
