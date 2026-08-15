@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import List
 
 from sqlalchemy import select, update
 from sqlalchemy.orm import sessionmaker
@@ -88,10 +89,10 @@ class SQLUser:
                     update(UserModel).where(UserModel.user_id == user_id).values(kwargs)
                 )
 
-    async def get_users_in_week(self) -> list[datetime]:
+    async def get_users_in_week(self) -> List[datetime]:
         """
         Получить дату регистрации новых пользователей за неделю
-        :return: list[datetime]
+        :return: List[datetime]
         """
         async with self.session() as session:
             async with session.begin():

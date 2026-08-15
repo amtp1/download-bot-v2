@@ -41,4 +41,4 @@ def convert_to_content_types(title: str, streams: dict, is_audio=None, is_video=
         )
         IKB_CONTENT_TYPES.add(inline_button)
     IKB_CONTENT_TYPES.adjust(1)
-    return [streams, IKB_CONTENT_TYPES]
+    return streams, IKB_CONTENT_TYPES

@@ -1,10 +1,11 @@
 import configparser
 from dataclasses import dataclass
+from pathlib import Path
 
 from redis.asyncio.client import Redis
-from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
 
 @dataclass
@@ -15,23 +16,17 @@ class BotConfig:
 
 @dataclass
 class DBConfig:
-    user: str
-    password: str
-    database: str
-    host: str
+    path: str
 
-    def create_url(self) -> URL:
-        return URL.create(
-            "postgresql+asyncpg",
-            username=self.user,
-            password=self.password,
-            database=self.database,
-            host=self.host,
-        )
+    def create_url(self) -> str:
+        db_path = Path(self.path).resolve().as_posix()
+        return f"sqlite+aiosqlite:///{db_path}"
 
     def create_engine(self) -> AsyncEngine:
         return create_async_engine(
-            url=self.create_url(), echo=False, pool_pre_ping=True
+            url=self.create_url(),
+            echo=False,
+            poolclass=NullPool,
         )
 
     def create_session(self) -> sessionmaker:

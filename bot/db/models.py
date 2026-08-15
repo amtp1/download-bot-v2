@@ -20,7 +20,14 @@ class UserModel(Base):
     __tablename__ = "users"
 
     id = Column(BigInteger, nullable=False, primary_key=True)  # Unique id
-    role = Column(Enum(Role), default=Role.USER)  # Роль пользователя в проекте
+    role = Column(
+        Enum(
+            Role,
+            values_callable=lambda enum: [item.name for item in enum],
+            native_enum=False,
+        ),
+        default=Role.USER,
+    )  # Роль пользователя в проекте
     user_id = Column(BigInteger())
     username = Column(String, nullable=True)
     first_name = Column(String, nullable=False)
