@@ -5,5 +5,7 @@
 
 alembic.ini
 bot.ini
+*.db
+*.sql
 
 migrations/
